@@ -1,26 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=El+Messiri:wght@400;500;600;700&family=Alkalami:wght@400;500;600;700&family=Fustat:wght@300;400;500;600;700&family=Harmattan:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Scheherazade+New:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@font-face {
+  font-family: "KFGQPC Uthman Taha Naskh";
+  src: url("/fonts/KFGQPC Uthman Taha Naskh Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Al Qalam Quran Majeed Web";
+  src: url("/fonts/Al Qalam Quran Majeed Web Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Me Quran Volt Newmet";
+  src: url("/fonts/me_quran_volt_newmet.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: #faf7f2;
+  --color-background-secondary: #f5f0ea;
+  --color-foreground: #2c2c2c;
+  --color-foreground-secondary: #4a4a4a;
+  --color-muted: #8a8a8a;
+  --color-border: #d4cfc8;
+  --color-accent: #8b7355;
+  --color-accent-foreground: #faf7f2;
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Georgia", "Times New Roman", serif;
+  --font-arabic: "Noto Naskh Arabic", "Scheherazade New", "Traditional Arabic", serif;
+  --font-nastaliq: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-background: #1a1a1a;
+    --color-background-secondary: #222222;
+    --color-foreground: #e5ddd5;
+    --color-foreground-secondary: #c8bfb4;
+    --color-muted: #7a726a;
+    --color-border: #3a3530;
+    --color-accent: #a08868;
+    --color-accent-foreground: #1a1a1a;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a6a6a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 26px;
+}
+
+@media (prefers-color-scheme: dark) {
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a0a0a0'/%3E%3C/svg%3E");
+  }
+}
+
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+  select { padding-right: 22px; background-size: 8px 5px; }
 }
