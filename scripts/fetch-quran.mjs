@@ -10,6 +10,7 @@ const SOURCES = {
   english_qarai: 'eng-aliquliqarai.min.json',
   urdu_jawadi: 'urd-syedzeeshanhaid.min.json',
   urdu_najafi: 'urd-muhammadhussain.min.json',
+  german_bubenheim: 'https://tanzil.net/trans/de.bubenheim',
 };
 
 async function fetchEd(name, url) {
@@ -18,6 +19,19 @@ async function fetchEd(name, url) {
   const raw = await resp.json();
   const data = raw.quran || raw;
   console.log(`  ${name}: ${data.length} verses`);
+  return data;
+}
+
+async function fetchTanzilPlain(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Failed to fetch german: ${resp.status}`);
+  const text = await resp.text();
+  const lines = text.trim().split('\n').filter(l => l && !l.startsWith('#'));
+  const data = lines.map(line => {
+    const parts = line.split('|');
+    return { chapter: Number(parts[0]), verse: Number(parts[1]), text: parts.slice(2).join('|') };
+  });
+  console.log(`  german_bubenheim: ${data.length} verses`);
   return data;
 }
 
@@ -51,6 +65,8 @@ async function main() {
   for (const [name, file] of Object.entries(SOURCES)) {
     if (name === 'arabic') {
       tasks[name] = fetchIslamicApp(file);
+    } else if (name === 'german_bubenheim') {
+      tasks[name] = fetchTanzilPlain(file);
     } else {
       tasks[name] = fetchEd(name, `${BASE}/${file}`);
     }
@@ -66,12 +82,14 @@ async function main() {
   const englishMap = extractVerseMap(results.english_qarai);
   const urduJawadiMap = extractVerseMap(results.urdu_jawadi);
   const urduNajafiMap = extractVerseMap(results.urdu_najafi);
+  const germanMap = extractVerseMap(results.german_bubenheim);
 
   const allKeys = new Set([
     ...Object.keys(arabicMap),
     ...Object.keys(englishMap),
     ...Object.keys(urduJawadiMap),
     ...Object.keys(urduNajafiMap),
+    ...Object.keys(germanMap),
   ]);
 
   const verses = [];
@@ -88,6 +106,7 @@ async function main() {
     const en = englishMap[key];
     const urJ = urduJawadiMap[key];
     const urN = urduNajafiMap[key];
+    const de = germanMap[key];
 
     verses.push({
       id,
@@ -97,6 +116,7 @@ async function main() {
       english_qarai: en?.text || '',
       urdu_jawadi: urJ?.text || '',
       urdu_najafi: urN?.text || '',
+      german_bubenheim: de?.text || '',
     });
     id++;
   }

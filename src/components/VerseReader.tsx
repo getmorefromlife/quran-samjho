@@ -17,13 +17,14 @@ const SPACE_MIN = 0.5;
 const SPACE_MAX = 2.0;
 const SPACE_STEP = 0.1;
 
-const COMPARATIVE_ORDER: TranslationKey[] = ['english_qarai', 'urdu_jawadi', 'urdu_najafi'];
+const COMPARATIVE_ORDER: TranslationKey[] = ['english_qarai', 'urdu_jawadi', 'urdu_najafi', 'german_bubenheim'];
 
 const SEARCH_FIELDS: { key: TranslationKey | 'arabic'; label: string }[] = [
   { key: 'arabic', label: 'Arabic' },
   { key: 'english_qarai', label: 'English (Ali Quli Qarai)' },
   { key: 'urdu_jawadi', label: 'Urdu (Zeeshan Haider Jawadi)' },
   { key: 'urdu_najafi', label: 'Urdu (Mohsin Ali Najafi)' },
+  { key: 'german_bubenheim', label: 'German (Bubenheim & Elyas)' },
 ];
 
 function loadFontPref(key: string, fallback: string): string {
@@ -44,6 +45,7 @@ export default function VerseReader() {
     'english_qarai',
     'urdu_jawadi',
     'urdu_najafi',
+    'german_bubenheim',
   ]);
   const [comparativeLayout, setComparativeLayout] = useState<'stacked' | 'columns'>('columns');
   const [fontScale, setFontScale] = useState(1);
@@ -146,6 +148,9 @@ export default function VerseReader() {
       if (searchField === '' || searchField === 'urdu_najafi') {
         if (wordStartsWith(normalizeText(v.urdu_najafi), q)) return true;
       }
+      if (searchField === '' || searchField === 'german_bubenheim') {
+        if (wordStartsWith(normalizeText(v.german_bubenheim), q)) return true;
+      }
       return false;
     });
   }, [allVerses, searchQuery, searchField]);
@@ -234,7 +239,7 @@ export default function VerseReader() {
 
   useEffect(() => {
     if (readingMode === 'monolingual') {
-      const lang = primaryLanguage === 'english_qarai' ? 'en' : primaryLanguage === 'arabic' ? 'ar' : 'ur';
+      const lang = primaryLanguage === 'english_qarai' ? 'en' : primaryLanguage === 'arabic' ? 'ar' : primaryLanguage === 'german_bubenheim' ? 'de' : 'ur';
       document.documentElement.lang = lang;
     } else {
       document.documentElement.lang = 'en';
@@ -1117,7 +1122,7 @@ function ToolbarFirstRow({
           onChange={(e) => onPrimaryLanguageChange(e.target.value as TranslationKey)}
           className="bg-transparent text-xs sm:text-sm text-muted border border-border/40 rounded px-2 sm:px-3 py-1.5 focus:outline-none focus:border-border cursor-pointer"
         >
-          {(['arabic', 'english_qarai', 'urdu_jawadi', 'urdu_najafi'] as TranslationKey[]).map((key) => (
+          {(['arabic', 'english_qarai', 'urdu_jawadi', 'urdu_najafi', 'german_bubenheim'] as TranslationKey[]).map((key) => (
             <option key={key} value={key}>
               {TRANSLATION_SHORT[key]}
             </option>

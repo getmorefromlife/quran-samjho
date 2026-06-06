@@ -1,4 +1,4 @@
-export type TranslationKey = 'arabic' | 'english_qarai' | 'urdu_jawadi' | 'urdu_najafi';
+export type TranslationKey = 'arabic' | 'english_qarai' | 'urdu_jawadi' | 'urdu_najafi' | 'german_bubenheim';
 
 export type ReadingMode = 'monolingual' | 'single-translation' | 'comparative';
 
@@ -10,6 +10,7 @@ export interface Verse {
   english_qarai: string;
   urdu_jawadi: string;
   urdu_najafi: string;
+  german_bubenheim: string;
 }
 
 export const TRANSLATION_LABELS: Record<TranslationKey, string> = {
@@ -17,6 +18,7 @@ export const TRANSLATION_LABELS: Record<TranslationKey, string> = {
   english_qarai: 'English (Ali Quli Qarai)',
   urdu_jawadi: 'Urdu (Zeeshan Haider Jawadi)',
   urdu_najafi: 'Urdu (Mohsin Ali Najafi)',
+  german_bubenheim: 'German (Bubenheim & Elyas)',
 };
 
 export const TRANSLATION_SHORT: Record<TranslationKey, string> = {
@@ -24,6 +26,7 @@ export const TRANSLATION_SHORT: Record<TranslationKey, string> = {
   english_qarai: 'English (Ali Quli Qarai)',
   urdu_jawadi: 'Urdu (Zeeshan Haider Jawadi)',
   urdu_najafi: 'Urdu (Mohsin Ali Najafi)',
+  german_bubenheim: 'German (Bubenheim & Elyas)',
 };
 
 export const LANGUAGE_RTL: Record<TranslationKey, boolean> = {
@@ -31,10 +34,12 @@ export const LANGUAGE_RTL: Record<TranslationKey, boolean> = {
   english_qarai: false,
   urdu_jawadi: true,
   urdu_najafi: true,
+  german_bubenheim: false,
 };
 
 export const SOURCE_TRANSLATIONS: TranslationKey[] = [
   'english_qarai',
   'urdu_jawadi',
   'urdu_najafi',
+  'german_bubenheim',
 ];
