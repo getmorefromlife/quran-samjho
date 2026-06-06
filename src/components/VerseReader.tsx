@@ -107,21 +107,33 @@ export default function VerseReader() {
   const totalVerses = allVerses.length;
   const isComparativeColumns = readingMode === 'comparative' && comparativeLayout === 'columns';
 
+  function normalizeText(s: string): string {
+    return s
+      .normalize('NFKC')
+      .replace(/[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')  // remove Arabic diacritics
+      .replace(/[\u0622\u0623\u0625\u0671\u0672\u0673]/g, '\u0627')  // normalize alef variants → regular alef
+      .replace(/\u0629/g, '\u0647')  // teh marbuta → ha
+      .replace(/[\u0649\u06CC\u06D0\u06D1]/g, '\u064A')  // normalize yeh variants
+      .replace(/\u0626/g, '\u064A')  // yeh with hamza → yeh
+      .replace(/\u0648\u0654/g, '\u0648')  // waw with hamza → waw
+      .toLowerCase();
+  }
+
   const filteredVerses = useMemo(() => {
     if (!searchQuery.trim()) return allVerses;
-    const q = searchQuery.trim().toLowerCase();
+    const q = normalizeText(searchQuery);
     return allVerses.filter((v) => {
       if (searchField === '' || searchField === 'arabic') {
-        if (v.arabic.toLowerCase().includes(q)) return true;
+        if (normalizeText(v.arabic).includes(q)) return true;
       }
       if (searchField === '' || searchField === 'english_qarai') {
-        if (v.english_qarai.toLowerCase().includes(q)) return true;
+        if (normalizeText(v.english_qarai).includes(q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_jawadi') {
-        if (v.urdu_jawadi.toLowerCase().includes(q)) return true;
+        if (normalizeText(v.urdu_jawadi).includes(q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_najafi') {
-        if (v.urdu_najafi.toLowerCase().includes(q)) return true;
+        if (normalizeText(v.urdu_najafi).includes(q)) return true;
       }
       return false;
     });
@@ -273,13 +285,41 @@ export default function VerseReader() {
 
   function highlightText(text: string): React.ReactNode {
     if (!searchQuery.trim()) return text;
-    const q = searchQuery.trim();
-    const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === q.toLowerCase()
-        ? <mark key={i} className="bg-accent/20 text-foreground rounded-sm px-0.5">{part}</mark>
-        : part
+    const q = normalizeText(searchQuery);
+    const isDiacritic = (c: string) => {
+      const code = c.charCodeAt(0);
+      return (code >= 0x064B && code <= 0x065F) || code === 0x0670 || code === 0x06E1 ||
+        (code >= 0x06D6 && code <= 0x06DC) || (code >= 0x06DF && code <= 0x06E8) ||
+        (code >= 0x06EA && code <= 0x06ED);
+    };
+    const groups: { base: string; diacs: string[] }[] = [];
+    for (let i = 0; i < text.length; i++) {
+      if (isDiacritic(text[i])) {
+        if (groups.length > 0) groups[groups.length - 1].diacs.push(text[i]);
+      } else {
+        groups.push({ base: text[i], diacs: [] });
+      }
+    }
+    const normGroups = groups.map(g => normalizeText(g.base));
+    const normFull = normGroups.join('');
+    const idx = normFull.indexOf(q);
+    if (idx === -1) return text;
+    const startGroup = idx;
+    const endGroup = idx + q.length;
+    const parts: React.ReactNode[] = [];
+    let key = 0;
+    if (startGroup > 0) {
+      parts.push(groups.slice(0, startGroup).map(g => g.base + g.diacs.join('')).join(''));
+    }
+    parts.push(
+      <mark key={key++} className="bg-accent/20 text-foreground rounded-sm px-0.5">
+        {groups.slice(startGroup, endGroup).map(g => g.base + g.diacs.join('')).join('')}
+      </mark>
     );
+    if (endGroup < groups.length) {
+      parts.push(groups.slice(endGroup).map(g => g.base + g.diacs.join('')).join(''));
+    }
+    return <>{parts}</>;
   }
 
   function renderVerseArabic(verse: Verse) {
