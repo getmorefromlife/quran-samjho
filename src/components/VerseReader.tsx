@@ -527,7 +527,7 @@ export default function VerseReader() {
                 <img
                   src="/quran-samjho/logo.png"
                   alt="Quran Samjho logo"
-                  className="h-7 sm:h-8 md:h-9 w-auto shrink-0"
+                  className="h-10 sm:h-11 md:h-12 w-auto shrink-0"
                 />
                 <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl tracking-wide text-foreground font-sans truncate font-[500]">
                   Quran Samjho
@@ -693,7 +693,7 @@ export default function VerseReader() {
             <img
               src="/quran-samjho/logo.png"
               alt="Quran Samjho logo"
-              className="h-10 w-auto mx-auto mb-2 opacity-80"
+              className="h-16 w-auto mx-auto mb-3 opacity-80"
             />
             <p className="text-sm text-foreground/70 font-sans tracking-wide">Quran Samjho</p>
             <p className="mt-1.5 text-muted leading-relaxed max-w-lg mx-auto">
