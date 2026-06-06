@@ -17,7 +17,7 @@ const SPACE_MIN = 0.5;
 const SPACE_MAX = 2.0;
 const SPACE_STEP = 0.1;
 
-const COMPARATIVE_ORDER: TranslationKey[] = ['english_qarai', 'urdu_jawadi', 'urdu_najafi', 'german_bubenheim'];
+const COMPARATIVE_ORDER: TranslationKey[] = ['urdu_jawadi', 'urdu_najafi', 'english_qarai', 'german_bubenheim'];
 
 const SEARCH_FIELDS: { key: TranslationKey | 'arabic'; label: string }[] = [
   { key: 'arabic', label: 'Arabic' },
@@ -42,9 +42,9 @@ export default function VerseReader() {
   const [primaryLanguage, setPrimaryLanguage] = useState<TranslationKey>('arabic');
   const [selectedTranslation, setSelectedTranslation] = useState<TranslationKey>('english_qarai');
   const [comparativeSelections, setComparativeSelections] = useState<TranslationKey[]>([
-    'english_qarai',
     'urdu_jawadi',
     'urdu_najafi',
+    'english_qarai',
     'german_bubenheim',
   ]);
   const [comparativeLayout, setComparativeLayout] = useState<'stacked' | 'columns'>('columns');
@@ -502,7 +502,10 @@ export default function VerseReader() {
             const sorted = COMPARATIVE_ORDER.filter((k) => comparativeSelections.includes(k));
             if (comparativeLayout === 'columns') {
               const count = sorted.length;
-              const gridCols = count >= 3 ? 'md:grid-cols-3' : count === 2 ? 'md:grid-cols-2' : '';
+              const gridCols = count <= 1 ? '' :
+                count === 2 ? 'md:grid-cols-2' :
+                count === 4 ? 'md:grid-cols-2' :
+                count <= 6 ? 'md:grid-cols-3' : 'md:grid-cols-4';
               return (
                 <div key={verse.id} style={{ marginBottom: gap(2.5) }}>
                   {renderVerseArabic(verse)}
@@ -514,7 +517,6 @@ export default function VerseReader() {
                       <div
                         key={key}
                         dir={LANGUAGE_RTL[key] ? 'rtl' : 'ltr'}
-                        className={i > 0 ? 'border-s border-border/10 ps-4' : ''}
                       >
                         <div className="text-xs text-muted/80 mb-1 text-center uppercase tracking-wider font-sans font-semibold">
                           {TRANSLATION_SHORT[key]}
