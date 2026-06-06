@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[76926,["/quran-samjho/_next/static/chunks/158myu8e_yme3.js","/quran-samjho/_next/static/chunks/08dhumwv08l61.js"],"default"]
+2:I[76926,["/quran-samjho/_next/static/chunks/158myu8e_yme3.js","/quran-samjho/_next/static/chunks/2ghmpm5umjxr3.js"],"default"]
 3:I[97367,["/quran-samjho/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"children":["$","$L2",null,{}]}],[["$","script","script-0",{"src":"/quran-samjho/_next/static/chunks/08dhumwv08l61.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"HopJhPOzWHhUv96OedkWl"}
+0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"children":["$","$L2",null,{}]}],[["$","script","script-0",{"src":"/quran-samjho/_next/static/chunks/2ghmpm5umjxr3.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"mx58zLg0_VsR9_ZA35-YA"}
 5:null
