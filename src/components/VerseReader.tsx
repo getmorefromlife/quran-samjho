@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Verse, ReadingMode, TranslationKey, TRANSLATION_SHORT, LANGUAGE_RTL, SOURCE_TRANSLATIONS } from '@/lib/types';
 import { SURAH_LIST, getVersesBySurah, getSurahInfo } from '@/lib/data';
+import ALL_VERSES from '@/lib/quran-complete.json';
 import { DEFAULT_FONTS, getFontFamily } from '@/lib/fonts';
 import { getBookmarks, addBookmark, removeBookmark, isBookmarked, getLastReadPosition, setLastReadPosition, Bookmark } from '@/lib/bookmarks';
 import SettingsPanel, { TextAlignment } from '@/components/SettingsPanel';
@@ -131,7 +132,8 @@ export default function VerseReader() {
   const filteredVerses = useMemo(() => {
     if (!searchQuery.trim()) return allVerses;
     const q = normalizeText(searchQuery);
-    return allVerses.filter((v) => {
+    const source = ALL_VERSES as Verse[];
+    return source.filter((v) => {
       if (searchField === '' || searchField === 'arabic') {
         if (wordStartsWith(normalizeText(v.arabic), q)) return true;
       }
@@ -545,6 +547,11 @@ export default function VerseReader() {
           data-verse={verse.ayah}
           className="relative group"
         >
+          {searchQuery && verse.surah !== selectedSurah && (
+            <div className="text-xs text-foreground/70 mb-1.5 font-sans font-medium">
+              {getSurahInfo(verse.surah)?.name ?? `Surah ${verse.surah}`} · {verse.surah}:{verse.ayah}
+            </div>
+          )}
           {block}
           <button
             onClick={() => handleToggleBookmark(verse.surah, verse.ayah)}
@@ -568,7 +575,15 @@ export default function VerseReader() {
       );
     });
 
-    return [surahHeader, ...verseBlocks];
+    const BISMILLAH = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ';
+
+    return [
+      surahHeader,
+      ...(info && !searchQuery && info.number !== 1 && info.number !== 9
+        ? [<p key="bismillah" dir="rtl" className="text-center text-foreground select-none mb-6" style={{ fontSize: rem(1.5), fontFamily: `${getFontFamily(arabicFont)}, Noto Naskh Arabic, serif` }}>{BISMILLAH}</p>]
+        : []),
+      ...verseBlocks,
+    ];
   }
 
   return (
@@ -758,8 +773,8 @@ export default function VerseReader() {
           {searchQuery && (
             <div className="text-center mb-6 text-xs text-muted">
               {filteredVerses.length} verse{filteredVerses.length !== 1 ? 's' : ''} match
-              {filteredVerses.length !== totalVerses && (
-                <> (of {totalVerses} in this surah)</>
+              {filteredVerses.length > 0 && filteredVerses.length !== totalVerses && (
+                <> (across all surahs)</>
               )}
             </div>
           )}
