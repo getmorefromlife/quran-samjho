@@ -684,18 +684,51 @@ export default function VerseReader() {
             {renderVerses()}
           </div>
 
-          <footer className="mt-12 sm:mt-16 pt-6 border-t border-border/20 text-center text-xs text-muted select-none">
-            <p>Quran Samjho — Created by Maulana Syed Imon Rizvi</p>
-            <p
-              dir="rtl"
-              style={{ fontFamily: `${getFontFamily(urduFont)}, Noto Nastaliq Urdu, serif` }}
-              className="mt-1"
-            >
-              مولانا سیّد آئمن رضوی
+          <footer className="mt-12 sm:mt-16 pt-8 pb-6 border-t border-border/20 text-center text-xs text-muted select-none">
+            <p className="text-sm text-foreground/70 font-sans tracking-wide">Quran Samjho</p>
+            <p className="mt-1.5 text-muted leading-relaxed max-w-lg mx-auto">
+              A community service initiative by Syed Imon Rizvi — offering a space
+              to read, understand, and reflect on the Holy Quran.
             </p>
+            <p className="mt-3 text-muted/70 leading-relaxed max-w-md mx-auto italic">
+              &ldquo;Reading with understanding is an act of reflection.
+              It opens the heart, quiets the mind, and draws us closer
+              to what matters most.&rdquo;
+            </p>
+            <p className="mt-3 text-muted/70 leading-relaxed max-w-md mx-auto">
+              Mercer and Mills is committed to interfaith dialogue and
+              humanitarian work — because peace begins when we seek
+              to understand one another.
+            </p>
+            <div className="mt-5 pt-4 border-t border-border/10">
+              <p className="text-foreground/60">— Maulana Syed Imon Rizvi</p>
+              <p
+                dir="rtl"
+                style={{ fontFamily: `${getFontFamily(urduFont)}, Noto Nastaliq Urdu, serif` }}
+                className="mt-1 text-foreground/50"
+              >
+                مولانا سیّد آئمن رضوی
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-border/10">
+              <a
+                href="mailto:mercerandmills@gmail.com,syedimonrizvipmp@gmail.com?subject=Quran%20Samjho%20Feedback"
+                className="text-muted/50 hover:text-accent transition-colors"
+              >
+                Share feedback
+              </a>
+            </div>
           </footer>
         </main>
       </div>
+
+      <a
+        href="mailto:mercerandmills@gmail.com,syedimonrizvipmp@gmail.com?subject=Quran%20Samjho%20Feedback"
+        className="fixed bottom-5 end-5 z-40 text-[11px] text-muted/40 hover:text-accent bg-background/80 backdrop-blur-sm border border-border/20 rounded-full px-3.5 py-2 transition-all duration-200 hover:border-accent/30 hover:text-accent select-none"
+        aria-label="Send feedback"
+      >
+        Feedback
+      </a>
     </>
   );
 }
