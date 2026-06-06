@@ -21,9 +21,9 @@ export const TRANSLATION_LABELS: Record<TranslationKey, string> = {
 
 export const TRANSLATION_SHORT: Record<TranslationKey, string> = {
   arabic: 'Arabic',
-  english_qarai: 'English',
-  urdu_jawadi: 'Urdu (Jawadi)',
-  urdu_najafi: 'Urdu (Najafi)',
+  english_qarai: 'English (Ali Quli Qarai)',
+  urdu_jawadi: 'Urdu (Zeeshan Haider Jawadi)',
+  urdu_najafi: 'Urdu (Mohsin Ali Najafi)',
 };
 
 export const LANGUAGE_RTL: Record<TranslationKey, boolean> = {

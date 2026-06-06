@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions';
 
 const SOURCES = {
-  arabic: 'ara-quranuthmanihaf.min.json',
+  arabic: 'https://api.islamic.app/v1/quran/verses/uthmani',
   english_qarai: 'eng-aliquliqarai.min.json',
   urdu_jawadi: 'urd-syedzeeshanhaid.min.json',
   urdu_najafi: 'urd-muhammadhussain.min.json',
@@ -19,6 +19,20 @@ async function fetchEd(name, url) {
   const data = raw.quran || raw;
   console.log(`  ${name}: ${data.length} verses`);
   return data;
+}
+
+async function fetchIslamicApp(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Failed to fetch arabic: ${resp.status}`);
+  const raw = await resp.json();
+  const ayahs = raw.data.ayahs;
+  console.log(`  arabic: ${ayahs.length} verses`);
+  // Convert to same format as other sources
+  return ayahs.map(a => ({
+    chapter: Number(a.verse_key.split(':')[0]),
+    verse: Number(a.verse_key.split(':')[1]),
+    text: a.text,
+  }));
 }
 
 function extractVerseMap(data) {
@@ -35,7 +49,11 @@ async function main() {
 
   const tasks = {};
   for (const [name, file] of Object.entries(SOURCES)) {
-    tasks[name] = fetchEd(name, `${BASE}/${file}`);
+    if (name === 'arabic') {
+      tasks[name] = fetchIslamicApp(file);
+    } else {
+      tasks[name] = fetchEd(name, `${BASE}/${file}`);
+    }
   }
 
   const results = {};

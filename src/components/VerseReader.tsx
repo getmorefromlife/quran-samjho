@@ -20,9 +20,9 @@ const COMPARATIVE_ORDER: TranslationKey[] = ['english_qarai', 'urdu_jawadi', 'ur
 
 const SEARCH_FIELDS: { key: TranslationKey | 'arabic'; label: string }[] = [
   { key: 'arabic', label: 'Arabic' },
-  { key: 'english_qarai', label: 'English' },
-  { key: 'urdu_jawadi', label: 'Urdu (Jawadi)' },
-  { key: 'urdu_najafi', label: 'Urdu (Najafi)' },
+  { key: 'english_qarai', label: 'English (Ali Quli Qarai)' },
+  { key: 'urdu_jawadi', label: 'Urdu (Zeeshan Haider Jawadi)' },
+  { key: 'urdu_najafi', label: 'Urdu (Mohsin Ali Najafi)' },
 ];
 
 function loadFontPref(key: string, fallback: string): string {
@@ -110,7 +110,7 @@ export default function VerseReader() {
   function normalizeText(s: string): string {
     return s
       .normalize('NFKC')
-      .replace(/[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')  // remove Arabic diacritics
+      .replace(/[\u0640\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')  // remove Arabic diacritics and tatweel
       .replace(/[\u0622\u0623\u0625\u0671\u0672\u0673]/g, '\u0627')  // normalize alef variants → regular alef
       .replace(/\u0629/g, '\u0647')  // teh marbuta → ha
       .replace(/[\u0649\u06CC\u06D0\u06D1]/g, '\u064A')  // normalize yeh variants
@@ -288,7 +288,7 @@ export default function VerseReader() {
     const q = normalizeText(searchQuery);
     const isDiacritic = (c: string) => {
       const code = c.charCodeAt(0);
-      return (code >= 0x064B && code <= 0x065F) || code === 0x0670 || code === 0x06E1 ||
+      return code === 0x0640 || (code >= 0x064B && code <= 0x065F) || code === 0x0670 || code === 0x06E1 ||
         (code >= 0x06D6 && code <= 0x06DC) || (code >= 0x06DF && code <= 0x06E8) ||
         (code >= 0x06EA && code <= 0x06ED);
     };
@@ -336,11 +336,10 @@ export default function VerseReader() {
         }}
         dir="rtl"
       >
-        <span className="text-muted align-super ml-3 select-none" style={{ fontSize: rem(0.7) }}>
-          {String.fromCharCode(0x06dd)}
+        {searchQuery ? highlightText(verse.arabic) : verse.arabic}
+        <span className="text-foreground/80 mr-3 select-none" style={{ fontSize: rem(1.2) }}>
           {verse.ayah}
         </span>
-        {searchQuery ? highlightText(verse.arabic) : verse.arabic}
       </p>
     );
   }
@@ -418,11 +417,10 @@ export default function VerseReader() {
                     }}
                     dir="rtl"
                   >
-                    <span className="text-muted align-super ml-3 select-none" style={{ fontSize: rem(0.7) }}>
-                      {String.fromCharCode(0x06dd)}
+                    {searchQuery ? highlightText(verse[primaryLanguage]) : verse[primaryLanguage]}
+                    <span className="text-foreground/80 mr-3 select-none" style={{ fontSize: rem(1.2) }}>
                       {verse.ayah}
                     </span>
-                    {searchQuery ? highlightText(verse[primaryLanguage]) : verse[primaryLanguage]}
                   </p>
                 ) : (
                   <p
@@ -470,7 +468,7 @@ export default function VerseReader() {
                         dir={LANGUAGE_RTL[key] ? 'rtl' : 'ltr'}
                         className={i > 0 ? 'border-s border-border/10 ps-4' : ''}
                       >
-                        <div className="text-[10px] text-muted/50 mb-1 uppercase tracking-wider font-sans">
+                        <div className="text-xs text-muted/80 mb-1 text-center uppercase tracking-wider font-sans font-semibold">
                           {TRANSLATION_SHORT[key]}
                         </div>
                         {renderTranslation(verse, key)}
@@ -486,7 +484,7 @@ export default function VerseReader() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: gap(1) }}>
                   {sorted.map((key) => (
                     <div key={key} dir={LANGUAGE_RTL[key] ? 'rtl' : 'ltr'}>
-                      <div className="text-[10px] text-muted/50 mb-0.5 uppercase tracking-wider font-sans">
+                      <div className="text-xs text-muted/80 mb-0.5 text-center uppercase tracking-wider font-sans font-semibold">
                         {TRANSLATION_SHORT[key]}
                       </div>
                       {renderTranslation(verse, key)}
