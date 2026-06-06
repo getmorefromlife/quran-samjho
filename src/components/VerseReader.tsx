@@ -107,6 +107,15 @@ export default function VerseReader() {
   const totalVerses = allVerses.length;
   const isComparativeColumns = readingMode === 'comparative' && comparativeLayout === 'columns';
 
+  function getWords(text: string): string[] {
+    return text.split(/[\s\-–—\u200B\u200C]+/).filter(Boolean);
+  }
+
+  function wordStartsWith(text: string, query: string): boolean {
+    if (!query) return false;
+    return getWords(text).some(word => word.startsWith(query));
+  }
+
   function normalizeText(s: string): string {
     return s
       .normalize('NFKC')
@@ -124,16 +133,16 @@ export default function VerseReader() {
     const q = normalizeText(searchQuery);
     return allVerses.filter((v) => {
       if (searchField === '' || searchField === 'arabic') {
-        if (normalizeText(v.arabic).includes(q)) return true;
+        if (wordStartsWith(normalizeText(v.arabic), q)) return true;
       }
       if (searchField === '' || searchField === 'english_qarai') {
-        if (normalizeText(v.english_qarai).includes(q)) return true;
+        if (wordStartsWith(normalizeText(v.english_qarai), q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_jawadi') {
-        if (normalizeText(v.urdu_jawadi).includes(q)) return true;
+        if (wordStartsWith(normalizeText(v.urdu_jawadi), q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_najafi') {
-        if (normalizeText(v.urdu_najafi).includes(q)) return true;
+        if (wordStartsWith(normalizeText(v.urdu_najafi), q)) return true;
       }
       return false;
     });
@@ -302,22 +311,54 @@ export default function VerseReader() {
     }
     const normGroups = groups.map(g => normalizeText(g.base));
     const normFull = normGroups.join('');
-    const idx = normFull.indexOf(q);
-    if (idx === -1) return text;
-    const startGroup = idx;
-    const endGroup = idx + q.length;
+
+    // Find word-start positions in normFull
+    const wordStarts: number[] = [];
+    for (let i = 0; i < normFull.length; ) {
+      while (i < normFull.length && /[\s\-–—\u200B\u200C]/.test(normFull[i])) i++;
+      if (i >= normFull.length) break;
+      wordStarts.push(i);
+      while (i < normFull.length && !/[\s\-–—\u200B\u200C]/.test(normFull[i])) i++;
+    }
+
+    // Find matching word ranges
+    const matches: [number, number][] = [];
+    for (const pos of wordStarts) {
+      if (normFull.slice(pos, pos + q.length) === q) {
+        matches.push([pos, pos + q.length]);
+      }
+    }
+
+    if (matches.length === 0) return text;
+
+    // Merge overlapping/adjacent ranges
+    const merged: [number, number][] = [matches[0]];
+    for (let i = 1; i < matches.length; i++) {
+      const last = merged[merged.length - 1];
+      if (matches[i][0] <= last[1]) {
+        last[1] = Math.max(last[1], matches[i][1]);
+      } else {
+        merged.push(matches[i]);
+      }
+    }
+
     const parts: React.ReactNode[] = [];
     let key = 0;
-    if (startGroup > 0) {
-      parts.push(groups.slice(0, startGroup).map(g => g.base + g.diacs.join('')).join(''));
+    let prevEnd = 0;
+
+    for (const [start, end] of merged) {
+      if (start > prevEnd) {
+        parts.push(groups.slice(prevEnd, start).map(g => g.base + g.diacs.join('')).join(''));
+      }
+      parts.push(
+        <mark key={key++} className="bg-accent/20 text-foreground rounded-sm px-0.5">
+          {groups.slice(start, end).map(g => g.base + g.diacs.join('')).join('')}
+        </mark>
+      );
+      prevEnd = end;
     }
-    parts.push(
-      <mark key={key++} className="bg-accent/20 text-foreground rounded-sm px-0.5">
-        {groups.slice(startGroup, endGroup).map(g => g.base + g.diacs.join('')).join('')}
-      </mark>
-    );
-    if (endGroup < groups.length) {
-      parts.push(groups.slice(endGroup).map(g => g.base + g.diacs.join('')).join(''));
+    if (prevEnd < groups.length) {
+      parts.push(groups.slice(prevEnd).map(g => g.base + g.diacs.join('')).join(''));
     }
     return <>{parts}</>;
   }
