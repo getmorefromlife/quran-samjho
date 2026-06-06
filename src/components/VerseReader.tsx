@@ -27,6 +27,36 @@ const SEARCH_FIELDS: { key: TranslationKey | 'arabic'; label: string }[] = [
   { key: 'german_bubenheim', label: 'German (Bubenheim & Elyas)' },
 ];
 
+function getWords(text: string): string[] {
+  return text.split(/[\s\-–—\u200B\u200C]+/).filter(Boolean);
+}
+
+function wordStartsWith(text: string, query: string): boolean {
+  if (!query) return false;
+  return getWords(text).some(word => word.startsWith(query));
+}
+
+function normalizeText(s: string): string {
+  return s
+    .normalize('NFKC')
+    .replace(/[\u0640\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')
+    .replace(/[\u0622\u0623\u0625\u0671\u0672\u0673]/g, '\u0627')
+    .replace(/\u0629/g, '\u0647')
+    .replace(/[\u0649\u06CC\u06D0\u06D1]/g, '\u064A')
+    .replace(/\u0626/g, '\u064A')
+    .replace(/\u0648\u0654/g, '\u0648')
+    .toLowerCase();
+}
+
+const ALL_VERSES_ARRAY = ALL_VERSES as Verse[];
+const NORMALIZED_VERSES = ALL_VERSES_ARRAY.map(v => ({
+  arabic: normalizeText(v.arabic),
+  english_qarai: normalizeText(v.english_qarai),
+  urdu_jawadi: normalizeText(v.urdu_jawadi),
+  urdu_najafi: normalizeText(v.urdu_najafi),
+  german_bubenheim: normalizeText(v.german_bubenheim),
+}));
+
 function loadFontPref(key: string, fallback: string): string {
   if (typeof window === 'undefined') return fallback;
   try { return localStorage.getItem(key) || fallback; } catch { return fallback; }
@@ -110,58 +140,48 @@ export default function VerseReader() {
   const totalVerses = allVerses.length;
   const isComparativeColumns = readingMode === 'comparative' && comparativeLayout === 'columns';
 
-  function getWords(text: string): string[] {
-    return text.split(/[\s\-–—\u200B\u200C]+/).filter(Boolean);
-  }
-
-  function wordStartsWith(text: string, query: string): boolean {
-    if (!query) return false;
-    return getWords(text).some(word => word.startsWith(query));
-  }
-
-  function normalizeText(s: string): string {
-    return s
-      .normalize('NFKC')
-      .replace(/[\u0640\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')  // remove Arabic diacritics and tatweel
-      .replace(/[\u0622\u0623\u0625\u0671\u0672\u0673]/g, '\u0627')  // normalize alef variants → regular alef
-      .replace(/\u0629/g, '\u0647')  // teh marbuta → ha
-      .replace(/[\u0649\u06CC\u06D0\u06D1]/g, '\u064A')  // normalize yeh variants
-      .replace(/\u0626/g, '\u064A')  // yeh with hamza → yeh
-      .replace(/\u0648\u0654/g, '\u0648')  // waw with hamza → waw
-      .toLowerCase();
-  }
+  const debouncedQuery = useRef('');
+  const [pendingSearch, setPendingSearch] = useState('');
+  useEffect(() => {
+    if (!searchQuery) {
+      setPendingSearch('');
+      return;
+    }
+    const timer = setTimeout(() => setPendingSearch(searchQuery), 250);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const filteredVerses = useMemo(() => {
-    if (!searchQuery.trim()) return allVerses;
-    const q = normalizeText(searchQuery);
-    const source = ALL_VERSES as Verse[];
-    return source.filter((v) => {
+    if (!pendingSearch.trim()) return allVerses;
+    const q = normalizeText(pendingSearch);
+    return ALL_VERSES_ARRAY.filter((v, i) => {
+      const n = NORMALIZED_VERSES[i];
       if (searchField === '' || searchField === 'arabic') {
-        if (wordStartsWith(normalizeText(v.arabic), q)) return true;
+        if (wordStartsWith(n.arabic, q)) return true;
       }
       if (searchField === '' || searchField === 'english_qarai') {
-        if (wordStartsWith(normalizeText(v.english_qarai), q)) return true;
+        if (wordStartsWith(n.english_qarai, q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_jawadi') {
-        if (wordStartsWith(normalizeText(v.urdu_jawadi), q)) return true;
+        if (wordStartsWith(n.urdu_jawadi, q)) return true;
       }
       if (searchField === '' || searchField === 'urdu_najafi') {
-        if (wordStartsWith(normalizeText(v.urdu_najafi), q)) return true;
+        if (wordStartsWith(n.urdu_najafi, q)) return true;
       }
       if (searchField === '' || searchField === 'german_bubenheim') {
-        if (wordStartsWith(normalizeText(v.german_bubenheim), q)) return true;
+        if (wordStartsWith(n.german_bubenheim, q)) return true;
       }
       return false;
     });
-  }, [allVerses, searchQuery, searchField]);
+  }, [allVerses, pendingSearch, searchField]);
 
   useEffect(() => {
-    if (!searchQuery) return;
+    if (!pendingSearch) return;
     const idx = filteredVerses.findIndex((v) => v.ayah === selectedVerse);
     if (idx === -1 && filteredVerses.length > 0) {
       setSelectedVerse(filteredVerses[0].ayah);
     }
-  }, [searchQuery, filteredVerses.length]);
+  }, [pendingSearch, filteredVerses.length]);
 
   useEffect(() => {
     setLastReadPosition(selectedSurah, selectedVerse);
