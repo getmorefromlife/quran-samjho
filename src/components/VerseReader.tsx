@@ -524,6 +524,11 @@ export default function VerseReader() {
           <div className={`${isComparativeColumns ? 'max-w-7xl' : 'max-w-5xl'} mx-auto px-3 sm:px-6 lg:px-8`}>
             <div className="flex items-center justify-between h-14 sm:h-16 md:h-18">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <img
+                  src="/quran-samjho/logo.png"
+                  alt="Quran Samjho logo"
+                  className="h-7 sm:h-8 md:h-9 w-auto shrink-0"
+                />
                 <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl tracking-wide text-foreground font-sans truncate font-[500]">
                   Quran Samjho
                 </h1>
@@ -685,6 +690,11 @@ export default function VerseReader() {
           </div>
 
           <footer className="mt-12 sm:mt-16 pt-8 pb-6 border-t border-border/20 text-center text-xs text-muted select-none">
+            <img
+              src="/quran-samjho/logo.png"
+              alt="Quran Samjho logo"
+              className="h-10 w-auto mx-auto mb-2 opacity-80"
+            />
             <p className="text-sm text-foreground/70 font-sans tracking-wide">Quran Samjho</p>
             <p className="mt-1.5 text-muted leading-relaxed max-w-lg mx-auto">
               A community service initiative by Syed Imon Rizvi — offering a space
