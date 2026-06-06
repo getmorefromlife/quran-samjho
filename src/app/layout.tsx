@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Quran Samjho",
-  description: "قرآن سمجھو — A minimal, Zen-mode Quran recitation and translation reader.",
+  description: "قرآن سمجھو — A community service initiative by Syed Imon Rizvi (Mercer and Mills) to read, understand, and reflect on the Holy Quran. Interfaith dialogue and humanitarian work for world peace.",
 };
 
 export default function RootLayout({

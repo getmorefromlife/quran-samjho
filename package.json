@@ -1,7 +1,8 @@
 {
-  "name": "quran-app",
+  "name": "quran-samjho",
   "version": "0.1.0",
   "private": true,
+  "description": "قرآن سمجھو — A community service initiative by Syed Imon Rizvi (Mercer and Mills) to read, understand, and reflect on the Holy Quran. Supports Arabic, English (Qarai), Urdu (Jawadi & Najafi) with a Zen-mode reading experience.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
